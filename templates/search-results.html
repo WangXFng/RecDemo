@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="wide wow-animation" lang="en">
+<head>
+    <title>Search Results</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--    <link rel="icon" href="images/favicon.ico" type="image/x-icon">-->
+<!--    <link rel="stylesheet" type="text/css"-->
+<!--          href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700%7CKalam:300,400,700">-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" id="main-styles-link">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/vanilla-select.min.css') }}">
+    <style>.ie-panel {
+        display: none;
+        background: #212121;
+        padding: 10px 0;
+        box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, .3);
+        clear: both;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    html.ie-10 .ie-panel, html.lt-ie-10 .ie-panel {
+        display: block;
+    }</style>
+    <style>
+        .ie-panel {
+            display: none;
+            background: #212121;
+            padding: 10px 0;
+            box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, .3);
+            clear: both;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        html.ie-10 .ie-panel, html.lt-ie-10 .ie-panel {
+            display: block;
+        }
+
+        .select__arrow {
+            display: none
+        }
+
+        .select__toolbox {
+            border: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="preloader">
+    <div class="preloader-body">
+        <div class="cssload-bell">
+            <div class="cssload-circle">
+                <div class="cssload-inner"></div>
+            </div>
+            <div class="cssload-circle">
+                <div class="cssload-inner"></div>
+            </div>
+            <div class="cssload-circle">
+                <div class="cssload-inner"></div>
+            </div>
+            <div class="cssload-circle">
+                <div class="cssload-inner"></div>
+            </div>
+            <div class="cssload-circle">
+                <div class="cssload-inner"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="page">
+    <!-- Search results-->
+    <section class="section section-sm section-first bg-default">
+        <div class="container">
+            <h2 class="font-weight-regular">#1 Select Histories</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-9">
+                    <!-- RD Search-->
+                    <form class="rd-form rd-search rd-form-inline">
+                        <div class="form-wrap">
+                            <div ref="select" class="form-input select-box">
+                                <div class="select__box ">
+                                    <div ref="toolbox" class="select__toolbox">
+                                        <div class="select__label">Select Items</div>
+                                    </div>
+                                    <div ref="dropdown" class="select__dropdown "><input ref="query" type="text"
+                                                                                         value="ur"
+                                                                                         class="select__query">
+                                        <ul ref="list" class="select__list">
+                                            <!--                        <li class="select__item" data-index="0" data-value="Allura">-->
+                                            <!--                          <span class="select__item_text">Allura</span>-->
+                                            <!--                        </li>-->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!--              <div class="rd-search-results"></div>-->
+                </div>
+            </div>
+
+            <br>
+            <br>
+            <form id="dynamic-form">
+            <div class="row row-30 box-ordered"   id="selected-results">
+<!--                                <div class="col-sm-6 col-lg-3">-->
+<!--                                    <article class="box-icon-modern box-classic-mode">-->
+<!--                                        <div class="box-icon-modern-header">-->
+<!--                                            <div class="box-icon-modern-count box-ordered-item"></div>-->
+<!--                                        </div>-->
+<!--                                        <h4 class="box-icon-modern-title"><a href="#">Best Service</a></h4>-->
+<!--                                        <p class="box-icon-modern-text text-gray-600">Est placerat in egestas erat imperdiet. Lorem ipsum dolor sit amet consectetur adipiscing.</p>-->
+<!--                                    </article>-->
+<!--                                </div>-->
+<!--                                <div class="col-sm-6 col-lg-3">-->
+<!--                                    <article class="box-icon-modern box-classic-mode">-->
+<!--                                        <div class="box-icon-modern-header">-->
+<!--                                            <div class="box-icon-modern-count box-ordered-item"></div>-->
+<!--                                        </div>-->
+<!--                                        <h4 class="box-icon-modern-title"><a href="#">Best Service</a></h4>-->
+<!--                                        <p class="box-icon-modern-text text-gray-600">Est placerat in egestas erat imperdiet. Lorem ipsum dolor sit amet consectetur adipiscing.</p>-->
+<!--                                    </article>-->
+<!--                                </div>-->
+            </div>
+            <br>
+            <br>
+            <div class="form-button">
+                <button class="button button-primary" type="submit">Recommend</button>
+            </div>
+            </form>
+            <div class="row row-30 box-ordered rd-form-inline form-wrap">
+            </div>
+            <br>
+            <br>
+            <h2 class="font-weight-regular">#2 Recommended Items</h2>
+            <div class="row row-30 box-ordered" id="searched-results">
+                <!--            <div class="col-sm-6 col-lg-3">-->
+                <!--              <article class="box-icon-modern box-classic-mode">-->
+                <!--                <div class="box-icon-modern-header">-->
+                <!--                  <div class="box-icon-modern-count box-ordered-item"></div>-->
+                <!--                </div>-->
+                <!--                <h4 class="box-icon-modern-title"><a href="#">Best Service</a></h4>-->
+                <!--                <p class="box-icon-modern-text text-gray-600">Est placerat in egestas erat imperdiet. Lorem ipsum dolor sit amet consectetur adipiscing.</p>-->
+                <!--              </article>-->
+                <!--            </div>-->
+                <!--            <div class="col-sm-6 col-lg-3">-->
+                <!--              <article class="box-icon-modern box-classic-mode">-->
+                <!--                <div class="box-icon-modern-header">-->
+                <!--                  <div class="box-icon-modern-count box-ordered-item"></div>-->
+                <!--                </div>-->
+                <!--                <h4 class="box-icon-modern-title"><a href="#">Reputation</a></h4>-->
+                <!--                <p class="box-icon-modern-text text-gray-600">Non curabitur gravida arcu ac tortor dignissim. Sapien faucibus et molestie ac feugiat . </p>-->
+                <!--              </article>-->
+                <!--            </div>-->
+                <!--            <div class="col-sm-6 col-lg-3">-->
+                <!--              <article class="box-icon-modern box-classic-mode">-->
+                <!--                <div class="box-icon-modern-header">-->
+                <!--                  <div class="box-icon-modern-count box-ordered-item"></div>-->
+                <!--                </div>-->
+                <!--                <h4 class="box-icon-modern-title"><a href="#">Safety</a></h4>-->
+                <!--                <p class="box-icon-modern-text text-gray-600">Dolor sed viverra ipsum nunc aliquet. Integer malesuada nunc vel risus commodo viverra .</p>-->
+                <!--              </article>-->
+                <!--            </div>-->
+                <!--            <div class="col-sm-6 col-lg-3">-->
+                <!--              <article class="box-icon-modern box-classic-mode">-->
+                <!--                <div class="box-icon-modern-header">-->
+                <!--                  <div class="box-icon-modern-count box-ordered-item"></div>-->
+                <!--                </div>-->
+                <!--                <h4 class="box-icon-modern-title"><a href="#">Security</a></h4>-->
+                <!--                <p class="box-icon-modern-text text-gray-600">Pulvinar etiam non quam lacus suspendisse. Sed arcu non odio euismod lacinia at quis  .</p>-->
+                <!--              </article>-->
+                <!--            </div>-->
+            </div>
+        </div>
+    </section>
+</div>
+<div class="snackbars" id="form-output-global"></div>
+
+<script src="{{ url_for('static', filename='js/core.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vanilla-select.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/items.js') }}"></script>
+<script>
+    function removeThisDiv(element) {
+        // 获取父级 div
+        var parentDiv = element.closest('.col-sm-6');
+
+        // 删除父级 div
+        if (parentDiv) {
+            parentDiv.remove();
+        }
+    }
+
+    let map_ = {};
+    for (let i = 0; i < source.length; i++) {
+        item = source[i];
+        map_[item['id']] = item;
+        source[i]['value'] = item['name'] + ' (' + item['categories'] + ')';
+    }
+
+    let select = Array.from(document.querySelectorAll('[ref="select"]')).map(el => {
+        return new Select({
+            placeholder: 'Select Item',
+            search: true,
+            noResults: 'No results found',
+            dataset: source,
+            itemmap: map_,
+            onSelected: item => {
+                // console.log(item)
+                container = document.querySelector('#selected-results')
+                let str = '       <div class="col-sm-6 col-lg-3">\n' +
+                    '               <article class="box-icon-modern box-classic-mode">\n' +
+                    '                <!-- <div class="box-icon-modern-header">\n' +
+                    '                  <div class="box-icon-modern-count box-ordered-item"></div> &nbsp;&nbsp;&nbsp;&nbsp;<p style="color: #FF0000" onclick="removeThisDiv(this)">X</p>\n' +
+                    '                </div>\n-->' +
+                    '                <h4 class="box-icon-modern-title"><a href="#">' + item['name'] + '</a> <b style="color: #FF0000; cursor: pointer" onclick="removeThisDiv(this)">X</b></h4>\n' +
+                    '                <p class="box-icon-modern-text">' + item['categories'] + '</p>\n' +
+                    '               </article>\n' +
+                    '               <input type="hidden" value="' + item['id'] + '" name="array[]">'
+                    '            </div>';
+                container.insertAdjacentHTML('beforeend', str);
+            }
+        }).componentMount({
+            el: el
+        });
+    });
+
+    const form = document.getElementById("dynamic-form");
+    form.addEventListener("submit", (event) => {
+            event.preventDefault(); // 防止默认提交
+
+            // 使用 FormData 收集表单数据
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (!data[key]) {
+                    data[key] = [];
+                }
+                data[key].push(value);
+            });
+
+            console.log(data)
+
+            // AJAX 请求
+            fetch("/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    // console.log("Success:", result);
+                    items = result['array']
+                    for (const item_id of items){
+                        item = map_[item_id]
+                        container = document.querySelector('#searched-results')
+                        let str = '       <div class="col-sm-6 col-lg-3">\n' +
+                            '               <article class="box-icon-modern box-classic-mode">\n' +
+                            '                <!-- <div class="box-icon-modern-header">\n' +
+                            '                  <div class="box-icon-modern-count box-ordered-item"></div> &nbsp;&nbsp;&nbsp;&nbsp;<p style="color: #FF0000" onclick="removeThisDiv(this)">X</p>\n' +
+                            '                </div>\n-->' +
+                            '                <h4 class="box-icon-modern-title"><a href="#">' + item['name'] + '</a> <b style="color: #FF0000; cursor: pointer" onclick="removeThisDiv(this)">X</b></h4>\n' +
+                            '                <p class="box-icon-modern-text">' + item['categories'] + '</p>\n' +
+                            '               </article>\n' +
+                            '               <input type="hidden" value="' + item['id'] + '" name="array[]">'
+                            '            </div>';
+                        container.insertAdjacentHTML('beforeend', str);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        });
+
+
+    // let select2 = new Select({
+    //   dataset: source,
+    //   selected: source[1].value,
+    //   onSelected: item => console.log(item)
+    // }).componentMount({
+    //   el: document.querySelector('[ref="select2"]')
+    // });
+
+
+</script>
+</body>
+</html>

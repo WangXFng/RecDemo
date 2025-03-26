@@ -1,6 +1,10 @@
 from flask import Flask, render_template, jsonify, request
-
+import torch
 app = Flask(__name__)
+
+app.recommender_sys = torch.load("EEDN_Yelp.pth")
+app.recommender_sys.to('cuda:0')
+app.recommender_sys.eval()
 
 
 
@@ -15,11 +19,19 @@ def handle_submit():
     data = request.get_json()
     if 'array[]' in data:
         array_data = data['array[]']
-        # 在这里处理数组数据
+        # print(array_data)
+        event_type = torch.tensor([int(item_id) for item_id in array_data], dtype=torch.long)
+        event_type = event_type.to(torch.device('cuda:0')).unsqueeze(0)
+        prediction, _ = app.recommender_sys(event_type)
+        recommended_items = torch.topk(prediction, 10, -1, sorted=True)[1]
+        recommended_items = recommended_items[0].cpu().tolist()
+
         print("Received array:", array_data)
-        return jsonify({"message": "Data received", "array": array_data})
+        print("Recommended items:", recommended_items)
+        return jsonify({"message": "Data received", "array": recommended_items})
     else:
         return jsonify({"error": "No array data found"}), 400
+
 
 
 # AJAX 数据接口
@@ -38,4 +50,4 @@ def get_data():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

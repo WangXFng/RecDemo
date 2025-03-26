@@ -78,7 +78,8 @@
     <!-- Search results-->
     <section class="section section-sm section-first bg-default">
         <div class="container">
-            <h2 class="font-weight-regular">#1 Select Histories</h2>
+{#            <h2 class="font-weight-regular">#1 Select Histories</h2>#}
+            <h3 class="font-weight-regular">#1 Select several POIs that you like</h3>
             <div class="row justify-content-center">
                 <div class="col-lg-10 col-xl-9">
                     <!-- RD Search-->
@@ -139,17 +140,9 @@
             </div>
             <br>
             <br>
-            <h2 class="font-weight-regular">#2 Recommended Items</h2>
+            <h3 class="font-weight-regular">#2 Recommended Items according your favor</h3>
             <div class="row row-30 box-ordered" id="searched-results">
-                <!--            <div class="col-sm-6 col-lg-3">-->
-                <!--              <article class="box-icon-modern box-classic-mode">-->
-                <!--                <div class="box-icon-modern-header">-->
-                <!--                  <div class="box-icon-modern-count box-ordered-item"></div>-->
-                <!--                </div>-->
-                <!--                <h4 class="box-icon-modern-title"><a href="#">Best Service</a></h4>-->
-                <!--                <p class="box-icon-modern-text text-gray-600">Est placerat in egestas erat imperdiet. Lorem ipsum dolor sit amet consectetur adipiscing.</p>-->
-                <!--              </article>-->
-                <!--            </div>-->
+
                 <!--            <div class="col-sm-6 col-lg-3">-->
                 <!--              <article class="box-icon-modern box-classic-mode">-->
                 <!--                <div class="box-icon-modern-header">-->
@@ -207,7 +200,7 @@
 
     let select = Array.from(document.querySelectorAll('[ref="select"]')).map(el => {
         return new Select({
-            placeholder: 'Select Item',
+            placeholder: 'Select Items Here',
             search: true,
             noResults: 'No results found',
             dataset: source,
@@ -258,22 +251,27 @@
             })
                 .then((response) => response.json())
                 .then((result) => {
-                    // console.log("Success:", result);
+                    if ('array' in result){
+
+                    container = document.querySelector('#searched-results')
+                    container.innerHTML = ''
+                    {#console.log("result:", result);#}
+                    {#console.log("result array:", result['array']);#}
                     items = result['array']
                     for (const item_id of items){
                         item = map_[item_id]
-                        container = document.querySelector('#searched-results')
                         let str = '       <div class="col-sm-6 col-lg-3">\n' +
                             '               <article class="box-icon-modern box-classic-mode">\n' +
+                            '               <div class="box-icon-modern-header"> <div class="box-icon-modern-count box-ordered-item"></div> </div> ' +
                             '                <!-- <div class="box-icon-modern-header">\n' +
                             '                  <div class="box-icon-modern-count box-ordered-item"></div> &nbsp;&nbsp;&nbsp;&nbsp;<p style="color: #FF0000" onclick="removeThisDiv(this)">X</p>\n' +
                             '                </div>\n-->' +
-                            '                <h4 class="box-icon-modern-title"><a href="#">' + item['name'] + '</a> <b style="color: #FF0000; cursor: pointer" onclick="removeThisDiv(this)">X</b></h4>\n' +
+                            '                <h4 class="box-icon-modern-title"><a href="#">' + item['name'] + '</a></h4>\n' +
                             '                <p class="box-icon-modern-text">' + item['categories'] + '</p>\n' +
                             '               </article>\n' +
-                            '               <input type="hidden" value="' + item['id'] + '" name="array[]">'
                             '            </div>';
                         container.insertAdjacentHTML('beforeend', str);
+                    }
                     }
                 })
                 .catch((error) => {

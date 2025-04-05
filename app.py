@@ -1,11 +1,16 @@
 from flask import Flask, render_template, jsonify, request
 import torch
+import sys
+
 app = Flask(__name__)
 
 app.recommender_sys = torch.load("EEDN_Yelp.pth")
 app.recommender_sys.to('cuda:0')
 app.recommender_sys.eval()
 
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', stream=sys.stdout)
+logger = logging.getLogger()
 
 
 # 页面路由
@@ -26,8 +31,11 @@ def handle_submit():
         recommended_items = torch.topk(prediction, 10, -1, sorted=True)[1]
         recommended_items = recommended_items[0].cpu().tolist()
 
-        print("Received array:", array_data)
-        print("Recommended items:", recommended_items)
+        remote_addr = request.remote_addr
+        logger.info('[' + remote_addr + "] Received array:")
+        logger.info(array_data)
+        logger.info('[' + remote_addr + "] Recommended items:")
+        logger.info(recommended_items)
         return jsonify({"message": "Data received", "array": recommended_items})
     else:
         return jsonify({"error": "No array data found"}), 400

@@ -7,6 +7,10 @@ app = Flask(__name__)
 app.recommender_sys = torch.load("EEDN_Yelp.pth")
 app.recommender_sys.to('cuda:0')
 app.recommender_sys.eval()
+import Items
+app.items = {}
+for item in Items.ITEMS:
+    app.items[item['id']] = item
 
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', stream=sys.stdout)
@@ -17,6 +21,12 @@ logger = logging.getLogger()
 @app.route('/')
 def index():
     return render_template('search-results.html')
+
+@app.route('/item', methods=['POST'])
+def item():
+    data = request.get_json()
+    item = app.items[data['id']]
+    return jsonify({'item': item})
 
 
 @app.route('/submit', methods=['POST'])
@@ -30,13 +40,16 @@ def handle_submit():
         prediction, _ = app.recommender_sys(event_type)
         recommended_items = torch.topk(prediction, 10, -1, sorted=True)[1]
         recommended_items = recommended_items[0].cpu().tolist()
+        results = []
+        for idx in recommended_items:
+            results.append(app.items[idx])
 
-        remote_addr = request.remote_addr
-        logger.info('[' + remote_addr + "] Received array:")
-        logger.info(array_data)
-        logger.info('[' + remote_addr + "] Recommended items:")
-        logger.info(recommended_items)
-        return jsonify({"message": "Data received", "array": recommended_items})
+        # remote_addr = request.remote_addr
+        # logger.info('[' + remote_addr + "] Received array:")
+        # logger.info(array_data)
+        # logger.info('[' + remote_addr + "] Recommended items:")
+        # logger.info(recommended_items)
+        return jsonify({"message": "Data received", "array": results})
     else:
         return jsonify({"error": "No array data found"}), 400
 

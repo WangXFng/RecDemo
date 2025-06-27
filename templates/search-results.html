@@ -4,7 +4,8 @@
     <title>Search Results</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+{#    <meta http-equiv="X-UA-Compatible" content="IE=edge">#}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!--    <link rel="icon" href="images/favicon.ico" type="image/x-icon">-->
 <!--    <link rel="stylesheet" type="text/css"-->
 <!--          href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700%7CKalam:300,400,700">-->
@@ -51,6 +52,46 @@
         }
 
     </style>
+      <style>
+    /* 遮罩层 */
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8); /* 黑色半透明 */
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    /* 弹窗内容 */
+    #popup {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 90%;
+      max-height: 80%;
+      overflow: auto;
+      width: 90%;
+      height: 80%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #333;
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+        /* 地图容器 */
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
 <div class="preloader">
@@ -173,8 +214,29 @@
             </div>
         </div>
     </section>
+{#    <button onclick="showPopup()">显示表格弹窗</button>#}
 </div>
 <div class="snackbars" id="form-output-global"></div>
+
+
+
+<!-- 弹窗 -->
+<!-- 弹窗和遮罩层 -->
+<div id="overlay" onclick="hidePopup()">
+  <div id="popup" onclick="event.stopPropagation()">
+      <div id="map"></div>
+{#    <table>#}
+{#      <thead>#}
+{#        <tr><th>姓名</th><th>年龄</th><th>城市</th></tr>#}
+{#      </thead>#}
+{#      <tbody>#}
+{#        <tr><td>张三</td><td>25</td><td>北京</td></tr>#}
+{#        <tr><td>李四</td><td>30</td><td>上海</td></tr>#}
+{#        <tr><td>王五</td><td>28</td><td>广州</td></tr>#}
+{#      </tbody>#}
+{#    </table>#}
+  </div>
+</div>
 
 <script src="{{ url_for('static', filename='js/core.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
@@ -192,10 +254,11 @@
     }
 
     let map_ = {};
+    {#console.log(source[0])#}
     for (let i = 0; i < source.length; i++) {
         item = source[i];
         map_[item['id']] = item;
-        source[i]['value'] = item['name'] + ' (' + item['categories'] + ')';
+        source[i]['value'] = item['value']; // + ' (' + item['categories'] + ')';
     }
 
     let select = Array.from(document.querySelectorAll('[ref="select"]')).map(el => {
@@ -206,19 +269,36 @@
             dataset: source,
             itemmap: map_,
             onSelected: item => {
-                // console.log(item)
-                container = document.querySelector('#selected-results')
-                let str = '       <div class="col-sm-6 col-lg-3">\n' +
-                    '               <article class="box-icon-modern box-classic-mode">\n' +
-                    '                <!-- <div class="box-icon-modern-header">\n' +
-                    '                  <div class="box-icon-modern-count box-ordered-item"></div> &nbsp;&nbsp;&nbsp;&nbsp;<p style="color: #FF0000" onclick="removeThisDiv(this)">X</p>\n' +
-                    '                </div>\n-->' +
-                    '                <h4 class="box-icon-modern-title"><a href="#">' + item['name'] + '</a> <b style="color: #FF0000; cursor: pointer" onclick="removeThisDiv(this)">X</b></h4>\n' +
-                    '                <p class="box-icon-modern-text">' + item['categories'] + '</p>\n' +
-                    '               </article>\n' +
-                    '               <input type="hidden" value="' + item['id'] + '" name="array[]">'
-                    '            </div>';
-                container.insertAdjacentHTML('beforeend', str);
+                // AJAX 请求
+            fetch("/item", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(item),
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    if ('item' in result){
+                        item = result.item
+                        // console.log(item)
+                        container = document.querySelector('#selected-results')
+                        let str = '       <div class="col-sm-6 col-lg-3">\n' +
+                            '               <article class="box-icon-modern box-classic-mode">\n' +
+                            '                <!-- <div class="box-icon-modern-header">\n' +
+                            '                  <div class="box-icon-modern-count box-ordered-item"></div> &nbsp;&nbsp;&nbsp;&nbsp;<p style="color: #FF0000" onclick="removeThisDiv(this)">X</p>\n' +
+                            '                </div>\n-->' +
+                            '                <h4 class="box-icon-modern-title"><a href="#">' + item['value'] + '</a> <b style="color: #FF0000; cursor: pointer" onclick="removeThisDiv(this)">X</b></h4>\n' +
+                            '                <p class="box-icon-modern-text">' + item['categories'] + '</p>\n' +
+                            '               </article>\n' +
+                            '               <input type="hidden" value="' + item['id'] + '" name="array[]">'
+                            '            </div>';
+                        container.insertAdjacentHTML('beforeend', str);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
             }
         }).componentMount({
             el: el
@@ -239,7 +319,7 @@
                 data[key].push(value);
             });
 
-            console.log(data)
+            {#console.log(data)#}
 
             // AJAX 请求
             fetch("/submit", {
@@ -258,15 +338,16 @@
                     {#console.log("result:", result);#}
                     {#console.log("result array:", result['array']);#}
                     items = result['array']
-                    for (const item_id of items){
-                        item = map_[item_id]
-                        let str = '       <div class="col-sm-6 col-lg-3">\n' +
+                    {#for (const item_id of items){#}
+                    for (const item of items){
+                        {#item = map_[item_id]#}
+                        let str = '       <div class="col-sm-6 col-lg-3" onclick="showPopup(\''+item['value']+'\','+item['latitude']+','+item['longitude']+')">\n' +
                             '               <article class="box-icon-modern box-classic-mode">\n' +
                             '               <div class="box-icon-modern-header"> <div class="box-icon-modern-count box-ordered-item"></div> </div> ' +
                             '                <!-- <div class="box-icon-modern-header">\n' +
                             '                  <div class="box-icon-modern-count box-ordered-item"></div> &nbsp;&nbsp;&nbsp;&nbsp;<p style="color: #FF0000" onclick="removeThisDiv(this)">X</p>\n' +
                             '                </div>\n-->' +
-                            '                <h4 class="box-icon-modern-title"><a href="#">' + item['name'] + '</a></h4>\n' +
+                            '                <h4 class="box-icon-modern-title"><a href="javascript:void(0)" >' + item['value'] + '</a></h4>\n' +
                             '                <p class="box-icon-modern-text">' + item['categories'] + '</p>\n' +
                             '               </article>\n' +
                             '            </div>';
@@ -290,5 +371,60 @@
 
 
 </script>
+
+
+<script>
+mapInitialized = false
+map = null;
+function showPopup(name, latitude, longitude) {
+  document.getElementById('overlay').style.display = 'flex';
+  {#document.getElementById('overlay').insertAdjacentHTML('beforeend', latitude + longitude);#}
+  {#  if (!mapInitialized) {#}
+    map = new BMapGL.Map("map"); // 创建地图实例
+    {#mapInitialized = true;#}
+        // 自定义地图样式：隐藏地名label
+    map.setMapStyleV2({
+      styleJson: [
+        {
+          featureType: "all",
+          elementType: "labels",
+          stylers: {
+            visibility: "off"
+          }
+        }
+      ]
+    });
+    //}
+
+    const point = new BMapGL.Point(longitude, latitude); // 经纬度是 (lng, lat)，注意顺序
+
+    // 添加标注
+    const marker = new BMapGL.Marker(point);
+
+    map.addOverlay(marker);
+    const label = new BMapGL.Label(name, {
+        position: point,
+        offset: new BMapGL.Size(30, -30)
+    });
+
+    label.setStyle({
+      color: "#fff",
+      backgroundColor: "#000",
+      border: "none",
+      fontSize: "14px",
+      padding: "2px 4px",
+      borderRadius: "3px"
+    });
+    marker.setLabel(label);
+
+    map.centerAndZoom(point, 15); // 初始化地图，设置中心点坐标和缩放级别
+    map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
+}
+
+function hidePopup() {
+  document.getElementById('overlay').style.display = 'none';
+}
+</script>
+<script src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=JXSyTxHA9W8SkhlbAavzLuu6R6uQdCJi"></script>
 </body>
 </html>
